@@ -4,86 +4,108 @@
 
     <h1>Edit Schedule</h1>
 
-    <a href="{{ route('schedule.index') }}">← Kembali</a>
+    <!-- BACK BUTTON -->
+    <div style="margin-bottom:16px;">
+        <a href="{{ route('schedule.index') }}">
+            <button type="button" style="background:#e2e8f0; color:black;">
+                ← Kembali
+            </button>
+        </a>
+    </div>
 
-    <hr>
-
+    <!-- ERROR -->
     @if ($errors->any())
-        <ul style="color:red">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+        <div class="card" style="background:#fee2e2; color:#991b1b;">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
     @endif
 
-    <form action="{{ route('schedule.update', $schedule->id) }}" method="POST">
-        @csrf
-        @method('PUT')
+    <div class="card">
 
-        <!-- Plane -->
-        <label>Plane:</label>
-        <select name="plane_id">
-            @foreach ($planes as $plane)
-                <option value="{{ $plane->id }}" {{ $schedule->plane_id == $plane->id ? 'selected' : '' }}>
-                    {{ $plane->airline->name }} - {{ $plane->name }}
-                </option>
-            @endforeach
-        </select>
+        <form action="{{ route('schedule.update', $schedule->id) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-        <br>
+            <!-- PLANE -->
+            <div class="form-group">
+                <label>Plane</label>
+                <select name="plane_id" required>
+                    @foreach ($planes as $plane)
+                        <option value="{{ $plane->id }}" {{ $schedule->plane_id == $plane->id ? 'selected' : '' }}>
+                            {{ $plane->airline->name }} - {{ $plane->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <!-- Origin -->
-        <label>Origin:</label>
-        <select name="origin_id">
-            @foreach ($cities as $city)
-                <option value="{{ $city->id }}" {{ $schedule->origin_id == $city->id ? 'selected' : '' }}>
-                    {{ $city->name }}
-                </option>
-            @endforeach
-        </select>
+            <!-- ORIGIN -->
+            <div class="form-group">
+                <label>Origin</label>
+                <select name="origin_id" required>
+                    @foreach ($cities as $city)
+                        <option value="{{ $city->id }}" {{ $schedule->origin_id == $city->id ? 'selected' : '' }}>
+                            {{ $city->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <br>
+            <!-- DESTINATION -->
+            <div class="form-group">
+                <label>Destination</label>
+                <select name="destination_id" required>
+                    @foreach ($cities as $city)
+                        <option value="{{ $city->id }}"
+                            {{ $schedule->destination_id == $city->id ? 'selected' : '' }}>
+                            {{ $city->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <!-- Destination -->
-        <label>Destination:</label>
-        <select name="destination_id">
-            @foreach ($cities as $city)
-                <option value="{{ $city->id }}" {{ $schedule->destination_id == $city->id ? 'selected' : '' }}>
-                    {{ $city->name }}
-                </option>
-            @endforeach
-        </select>
+            <!-- DEPARTURE -->
+            <div class="form-group">
+                <label>Departure Time</label>
+                <input type="datetime-local" name="departure_time"
+                    value="{{ \Carbon\Carbon::parse($schedule->departure_time)->format('Y-m-d\TH:i') }}" required>
+            </div>
 
-        <br>
+            <!-- ARRIVAL -->
+            <div class="form-group">
+                <label>Arrival Time</label>
+                <input type="datetime-local" name="arrival_time"
+                    value="{{ \Carbon\Carbon::parse($schedule->arrival_time)->format('Y-m-d\TH:i') }}" required>
+            </div>
 
-        <!-- Departure -->
-        <label>Departure:</label>
-        <input type="datetime-local" name="departure_time"
-            value="{{ \Carbon\Carbon::parse($schedule->departure_time)->format('Y-m-d\TH:i') }}">
+            <!-- PRICE -->
+            <div class="form-group">
+                <label>Price</label>
+                <input type="number" name="price" value="{{ $schedule->price }}" required>
+            </div>
 
-        <br>
+            <!-- SEATS -->
+            <div class="form-group">
+                <label>Available Seats</label>
+                <input type="number" name="available_seats" value="{{ $schedule->available_seats }}" required>
+            </div>
 
-        <!-- Arrival -->
-        <label>Arrival:</label>
-        <input type="datetime-local" name="arrival_time"
-            value="{{ \Carbon\Carbon::parse($schedule->arrival_time)->format('Y-m-d\TH:i') }}">
+            <!-- ACTION -->
+            <div style="margin-top:16px;">
+                <button type="submit">Update</button>
 
-        <br>
+                <a href="{{ route('schedule.index') }}">
+                    <button type="button" style="background:#e2e8f0; color:black;">
+                        Batal
+                    </button>
+                </a>
+            </div>
 
-        <!-- Price -->
-        <label>Price:</label>
-        <input type="number" name="price" value="{{ $schedule->price }}">
+        </form>
 
-        <br>
-
-        <!-- Seats -->
-        <label>Seats:</label>
-        <input type="number" name="available_seats" value="{{ $schedule->available_seats }}">
-
-        <br><br>
-
-        <button type="submit">Update</button>
-
-    </form>
+    </div>
 
 @endsection

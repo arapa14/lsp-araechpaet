@@ -4,78 +4,106 @@
 
     <h1>Booking Ticket</h1>
 
-    <hr>
+    <!-- FLIGHT DETAIL -->
+    <div class="card">
+        <h2>Flight Detail</h2>
 
-    <h2>Flight Detail</h2>
+        <p><strong>Airline:</strong> {{ $schedule->plane->airline->name }}</p>
+        <p><strong>Plane:</strong> {{ $schedule->plane->name }}</p>
 
-    <p><strong>Airline:</strong> {{ $schedule->plane->airline->name }}</p>
-    <p><strong>Plane:</strong> {{ $schedule->plane->name }}</p>
-    <p>
-        <strong>Route:</strong>
-        {{ $schedule->origin->name }} → {{ $schedule->destination->name }}
-    </p>
-    <p>
-        <strong>Departure:</strong>
-        {{ \Carbon\Carbon::parse($schedule->departure_time)->format('d M Y H:i') }}
-    </p>
-    <p>
-        <strong>Arrival:</strong>
-        {{ \Carbon\Carbon::parse($schedule->arrival_time)->format('d M Y H:i') }}
-    </p>
-    <p><strong>Price per Ticket:</strong> Rp {{ number_format($schedule->price) }}</p>
-    <p><strong>Available Seats:</strong> {{ $schedule->available_seats }}</p>
+        <p>
+            <strong>Route:</strong>
+            {{ $schedule->origin->name }} → {{ $schedule->destination->name }}
+        </p>
 
-    <hr>
+        <p>
+            <strong>Departure:</strong>
+            {{ \Carbon\Carbon::parse($schedule->departure_time)->format('d M Y H:i') }}
+        </p>
 
+        <p>
+            <strong>Arrival:</strong>
+            {{ \Carbon\Carbon::parse($schedule->arrival_time)->format('d M Y H:i') }}
+        </p>
+
+        <p><strong>Price:</strong> Rp {{ number_format($schedule->price) }} / ticket</p>
+
+        <p>
+            <strong>Seats:</strong>
+            @if ($schedule->available_seats > 0)
+                <span class="badge badge-success">
+                    {{ $schedule->available_seats }} tersedia
+                </span>
+            @else
+                <span class="badge badge-danger">Full</span>
+            @endif
+        </p>
+    </div>
+
+    <!-- ERROR -->
     @if (session('error'))
-        <p style="color:red">{{ session('error') }}</p>
+        <div class="card" style="background:#fee2e2; color:#991b1b;">
+            {{ session('error') }}
+        </div>
     @endif
 
     @if ($errors->any())
-        <ul style="color:red">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
+        <div class="card" style="background:#fee2e2; color:#991b1b;">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
     @endif
 
-    <form action="{{ route('customer.booking.store') }}" method="POST">
-        @csrf
+    <!-- FORM BOOKING -->
+    <div class="card">
+        <form action="{{ route('customer.booking.store') }}" method="POST">
+            @csrf
 
-        <input type="hidden" name="schedule_id" value="{{ $schedule->id }}">
+            <input type="hidden" name="schedule_id" value="{{ $schedule->id }}">
 
-        <h3>Jumlah Tiket</h3>
-        <input type="number" name="qty" min="1" max="{{ $schedule->available_seats }}" value="1" required>
+            <!-- QTY -->
+            <div class="form-group">
+                <label>Jumlah Tiket</label>
+                <input type="number" name="qty" min="1" max="{{ $schedule->available_seats }}" value="1"
+                    required style="padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
+            </div>
 
-        <br><br>
+            <!-- TOTAL -->
+            <div class="card" style="background:#f8fafc;">
+                <p>
+                    <strong>Estimasi Total:</strong><br>
+                    <span style="font-size:20px; font-weight:bold;">
+                        Rp <span id="total">{{ number_format($schedule->price) }}</span>
+                    </span>
+                </p>
+            </div>
 
-        <p>
-            <strong>Estimasi Total:</strong>
-            Rp <span id="total">{{ number_format($schedule->price) }}</span>
-        </p>
+            <!-- PAYMENT -->
+            <div class="form-group">
+                <label>Pilih Metode Pembayaran</label>
 
-        <hr>
+                @foreach ($payments as $payment)
+                    <label style="display:block; margin-top:6px;">
+                        <input type="radio" name="payment_id" value="{{ $payment->id }}" required>
+                        {{ $payment->name }}
 
-        <h3>Pilih Metode Pembayaran</h3>
+                        @if ($payment->no)
+                            ({{ $payment->no }})
+                        @endif
+                    </label>
+                @endforeach
+            </div>
 
-        @foreach ($payments as $payment)
-            <label>
-                <input type="radio" name="payment_id" value="{{ $payment->id }}" required>
-                {{ $payment->name }}
-
-                @if ($payment->no)
-                    ({{ $payment->no }})
-                @endif
-            </label>
             <br>
-        @endforeach
 
-        <br>
+            <button type="submit">Konfirmasi Booking</button>
+        </form>
+    </div>
 
-        <button type="submit">Konfirmasi Booking</button>
-
-    </form>
-
+    <!-- SCRIPT -->
     <script>
         const price = {{ $schedule->price }};
         const qtyInput = document.querySelector('input[name="qty"]');
@@ -88,4 +116,5 @@
             totalEl.innerText = total.toLocaleString('id-ID');
         });
     </script>
+
 @endsection

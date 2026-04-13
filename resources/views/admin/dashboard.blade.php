@@ -3,78 +3,102 @@
 @section('content')
     <h1>Admin Dashboard</h1>
 
-    <hr>
-
-    <h2>Semua Booking</h2>
-
+    <!-- SUCCESS -->
     @if (session('success'))
-        <p style="color:green">{{ session('success') }}</p>
+        <div class="card" style="background:#ecfdf5; color:#065f46;">
+            {{ session('success') }}
+        </div>
     @endif
 
-    <table border="1" cellpadding="10">
-        <thead>
-            <tr>
-                <th>Kode</th>
-                <th>User</th>
-                <th>Airline</th>
-                <th>Rute</th>
-                <th>Qty</th>
-                <th>Total</th>
-                <th>Payment</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
+    <!-- TABLE -->
+    <div class="card">
+        <h2>Semua Booking</h2>
 
-        <tbody>
-            @forelse($bookings as $booking)
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $booking->code }}</td>
-
-                    <td>{{ $booking->user->name }}</td>
-
-                    <td>
-                        {{ $booking->schedule->plane->airline->name }}
-                    </td>
-
-                    <td>
-                        {{ $booking->schedule->origin->name }}
-                        →
-                        {{ $booking->schedule->destination->name }}
-                    </td>
-
-                    <td>{{ $booking->quantity }}</td>
-
-                    <td>Rp {{ number_format($booking->total_price) }}</td>
-
-                    <td>{{ $booking->payment->name }}</td>
-
-                    <td>{{ ucfirst($booking->status) }}</td>
-
-                    <td>
-                        <form action="{{ route('admin.booking.updateStatus', $booking->id) }}" method="POST">
-                            @csrf
-
-                            <select name="status">
-                                <option value="pending">Pending</option>
-                                <option value="success">Success</option>
-                                <option value="failed">Failed</option>
-                                <option value="canceled">Canceled</option>
-                            </select>
-
-                            <button type="submit">Update</button>
-                        </form>
-                    </td>
+                    <th>Kode</th>
+                    <th>User</th>
+                    <th>Airline</th>
+                    <th>Rute</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Action</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="9">Tidak ada booking</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
 
-    <br>
+            <tbody>
+                @forelse($bookings as $booking)
+                    <tr>
+                        <td><strong>{{ $booking->code }}</strong></td>
 
-    {{ $bookings->links() }}
+                        <td>{{ $booking->user->name }}</td>
+
+                        <td>
+                            {{ $booking->schedule->plane->airline->name }}
+                        </td>
+
+                        <td>
+                            {{ $booking->schedule->origin->name }}
+                            →
+                            {{ $booking->schedule->destination->name }}
+                        </td>
+
+                        <td>{{ $booking->quantity }}</td>
+
+                        <td>Rp {{ number_format($booking->total_price) }}</td>
+
+                        <td>{{ $booking->payment->name }}</td>
+
+                        <!-- STATUS -->
+                        <td>
+                            @if ($booking->status === 'success')
+                                <span class="badge badge-success">Success</span>
+                            @elseif ($booking->status === 'pending')
+                                <span class="badge" style="background:#fef9c3; color:#854d0e;">Pending</span>
+                            @elseif ($booking->status === 'failed')
+                                <span class="badge badge-danger">Failed</span>
+                            @else
+                                <span class="badge" style="background:#e2e8f0;">Canceled</span>
+                            @endif
+                        </td>
+
+                        <!-- ACTION -->
+                        <td>
+                            <form action="{{ route('admin.booking.updateStatus', $booking->id) }}" method="POST"
+                                style="display:flex; gap:6px;">
+                                @csrf
+
+                                <select name="status" style="padding:6px; border-radius:6px;">
+                                    <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>Pending
+                                    </option>
+                                    <option value="success" {{ $booking->status == 'success' ? 'selected' : '' }}>Success
+                                    </option>
+                                    <option value="failed" {{ $booking->status == 'failed' ? 'selected' : '' }}>Failed
+                                    </option>
+                                    <option value="canceled" {{ $booking->status == 'canceled' ? 'selected' : '' }}>
+                                        Canceled</option>
+                                </select>
+
+                                <button type="submit">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="9" class="empty">
+                            Tidak ada booking
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGINATION -->
+    <div style="margin-top:20px;">
+        {{ $bookings->links() }}
+    </div>
 @endsection

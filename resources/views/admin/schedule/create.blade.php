@@ -1,61 +1,97 @@
 @extends('layout.dashboard')
 
 @section('content')
+
     <h1>Tambah Schedule</h1>
 
-    <form action="{{ route('schedule.store') }}" method="POST">
-        @csrf
+    <!-- ERROR -->
+    @if ($errors->any())
+        <div class="card" style="background:#fee2e2; color:#991b1b;">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-        <label>Plane:</label>
-        <select name="plane_id">
-            @foreach ($planes as $plane)
-                <option value="{{ $plane->id }}">
-                    {{ $plane->airline->name }} - {{ $plane->name }}
-                </option>
-            @endforeach
-        </select>
+    <div class="card">
 
-        <br>
+        <form action="{{ route('schedule.store') }}" method="POST">
+            @csrf
 
-        <label>Origin:</label>
-        <select name="origin_id">
-            @foreach ($cities as $city)
-                <option value="{{ $city->id }}">{{ $city->name }}</option>
-            @endforeach
-        </select>
+            <!-- PLANE -->
+            <div class="form-group">
+                <label>Plane</label>
+                <select name="plane_id" required>
+                    @foreach ($planes as $plane)
+                        <option value="{{ $plane->id }}">
+                            {{ $plane->airline->name }} - {{ $plane->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <br>
+            <!-- ORIGIN -->
+            <div class="form-group">
+                <label>Origin</label>
+                <select name="origin_id" required>
+                    @foreach ($cities as $city)
+                        <option value="{{ $city->id }}">
+                            {{ $city->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <label>Destination:</label>
-        <select name="destination_id">
-            @foreach ($cities as $city)
-                <option value="{{ $city->id }}">{{ $city->name }}</option>
-            @endforeach
-        </select>
+            <!-- DESTINATION -->
+            <div class="form-group">
+                <label>Destination</label>
+                <select name="destination_id" required>
+                    @foreach ($cities as $city)
+                        <option value="{{ $city->id }}">
+                            {{ $city->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-        <br>
+            <!-- DEPARTURE -->
+            <div class="form-group">
+                <label>Departure Time</label>
+                <input type="datetime-local" name="departure_time" required>
+            </div>
 
-        <label>Departure:</label>
-        <input type="datetime-local" name="departure_time">
+            <!-- ARRIVAL -->
+            <div class="form-group">
+                <label>Arrival Time</label>
+                <input type="datetime-local" name="arrival_time" required>
+            </div>
 
-        <br>
+            <!-- PRICE -->
+            <div class="form-group">
+                <label>Price</label>
+                <input type="number" name="price" placeholder="Contoh: 500000" required>
+            </div>
 
-        <label>Arrival:</label>
-        <input type="datetime-local" name="arrival_time">
+            <!-- SEATS -->
+            <div class="form-group">
+                <label>Available Seats</label>
+                <input type="number" name="available_seats" placeholder="Contoh: 120" required>
+            </div>
 
-        <br>
+            <!-- ACTION -->
+            <div style="margin-top:16px;">
+                <button type="submit">Simpan</button>
+                <a href="{{ route('schedule.index') }}">
+                    <button type="button" style="background:#e2e8f0; color:black;">
+                        Kembali
+                    </button>
+                </a>
+            </div>
 
-        <label>Price:</label>
-        <input type="number" name="price">
+        </form>
 
-        <br>
+    </div>
 
-        <label>Seats:</label>
-        <input type="number" name="available_seats">
-
-        <br><br>
-
-        <button type="submit">Save</button>
-
-    </form>
 @endsection
