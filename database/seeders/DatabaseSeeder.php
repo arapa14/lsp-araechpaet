@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
             PlaneSeeder::class,
             SeatSeeder::class,
             CitySeeder::class,
-            PaymentSeeder::class
+            PaymentSeeder::class,
+            ScheduleSeeder::class
         ]);
     }
 }
