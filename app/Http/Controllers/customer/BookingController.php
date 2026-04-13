@@ -31,7 +31,7 @@ class BookingController
             'schedule_id' => 'required|exists:schedules,id',
             'payment_id' => 'required|exists:payments,id',
             'qty' => 'required|integer|min:1',
-            'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+            'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:8192'
         ]);
 
         DB::beginTransaction();
