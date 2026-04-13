@@ -17,7 +17,9 @@ return new class extends Migration
             $table->foreignId('schedule_id')->constrained()->onDelete('cascade');
             $table->foreignId('payment_id')->constrained()->onDelete('cascade');
             $table->string('code');
+            $table->integer('quantity');
             $table->integer('total_price');
+            $table->enum('status', ['pending', 'success', 'failed', 'canceled'])->default('pending');
             $table->timestamps();
         });
     }

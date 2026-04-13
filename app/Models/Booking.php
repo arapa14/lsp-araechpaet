@@ -13,7 +13,9 @@ class Booking extends Model
         'schedule_id',
         'payment_id',
         'code',
+        'quantity',
         'total_price',
+        'status'
     ];
 
     public function user()

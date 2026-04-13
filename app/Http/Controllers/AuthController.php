@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
+use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +39,8 @@ class AuthController
         ]);
     }
 
-    public function postRegister(Request $request) {
+    public function postRegister(Request $request)
+    {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -65,14 +68,43 @@ class AuthController
         return redirect()->route('login')->with('success', 'successfully logged out');
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        $role = Auth::user()->role;
-        
-        if ($role == 'admin') {
+        $user = Auth::user();
+
+        // ======================
+        // ADMIN
+        // ======================
+        if ($user->role === 'admin') {
             return view('admin.dashboard');
-        } else {
-            return view('customer.dashboard');
         }
+
+        // ======================
+        // CUSTOMER
+        // ======================
+        $query = Schedule::with([
+            'plane.airline',
+            'origin',
+            'destination'
+        ]);
+
+        if ($request->filled('origin_id')) {
+            $query->where('origin_id', $request->origin_id);
+        }
+
+        if ($request->filled('destination_id')) {
+            $query->where('destination_id', $request->destination_id);
+        }
+
+        if ($request->filled('date')) {
+            $query->whereDate('departure_time', $request->date);
+        }
+
+        $query->where('departure_time', '>', now());
+
+        return view('customer.dashboard', [
+            'schedules' => $query->orderBy('departure_time')->paginate(10),
+            'cities' => City::all(),
+        ]);
     }
 }
