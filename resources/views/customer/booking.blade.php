@@ -59,7 +59,7 @@
 
     <!-- FORM BOOKING -->
     <div class="card">
-        <form action="{{ route('customer.booking.store') }}" method="POST">
+        <form action="{{ route('customer.booking.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <input type="hidden" name="schedule_id" value="{{ $schedule->id }}">
@@ -86,15 +86,28 @@
                 <label>Pilih Metode Pembayaran</label>
 
                 @foreach ($payments as $payment)
-                    <label style="display:block; margin-top:6px;">
+                    <label style="display:flex; align-items:center; gap:10px; margin-top:8px;">
                         <input type="radio" name="payment_id" value="{{ $payment->id }}" required>
-                        {{ $payment->name }}
 
-                        @if ($payment->no)
-                            ({{ $payment->no }})
-                        @endif
+                        <img src="{{ $payment->logo ? asset('storage/' . $payment->logo) : asset('images/default-payment.png') }}"
+                            alt="logo" width="40">
+
+                        <div>
+                            {{ $payment->name }}
+                            @if ($payment->no)
+                                <div style="font-size:12px; color:gray;">
+                                    {{ $payment->no }}
+                                </div>
+                            @endif
+                        </div>
                     </label>
                 @endforeach
+            </div>
+
+            <div class="form-group">
+                <label>Upload Bukti Pembayaran</label>
+                <input type="file" name="payment_proof" accept="image/*" required
+                    style="padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
             </div>
 
             <br>

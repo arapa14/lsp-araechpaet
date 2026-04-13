@@ -12,6 +12,7 @@ class Booking extends Model
         'user_id',
         'schedule_id',
         'payment_id',
+        'payment_proof',
         'code',
         'quantity',
         'total_price',

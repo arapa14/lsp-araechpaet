@@ -48,7 +48,13 @@
             <tbody>
                 @forelse($schedules as $schedule)
                     <tr>
-                        <td>{{ $schedule->plane->airline->name }}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <img src="{{ asset('storage/' . $schedule->plane->airline->logo) }}" alt="logo"
+                                    width="40">
+                                {{ $schedule->plane->airline->name }}
+                            </div>
+                        </td>
                         <td>{{ $schedule->plane->name }}</td>
                         <td>
                             {{ $schedule->origin->name }} → {{ $schedule->destination->name }}

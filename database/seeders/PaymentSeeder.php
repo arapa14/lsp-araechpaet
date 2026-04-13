@@ -35,21 +35,6 @@ class PaymentSeeder extends Seeder
                 'logo' => 'payments/qris.png',
                 'no' => null
             ],
-            [
-                'name' => 'GoPay',
-                'logo' => 'payments/gopay.png',
-                'no' => null
-            ],
-            [
-                'name' => 'OVO',
-                'logo' => 'payments/ovo.png',
-                'no' => null
-            ],
-            [
-                'name' => 'DANA',
-                'logo' => 'payments/dana.png',
-                'no' => null
-            ],
         ];
 
         foreach ($payments as $payment) {

@@ -19,6 +19,7 @@
                 <th>Quantity</th>
                 <th>Total</th>
                 <th>Payment</th>
+                <th>Bukti</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -52,6 +53,15 @@
 
                     <td>
                         {{ $booking->payment->name }}
+                    </td>
+
+                    <td>
+                        @if ($booking->payment_proof)
+                            <img src="{{ asset('storage/' . $booking->payment_proof) }}" width="80"
+                                style="border-radius:6px; cursor:pointer;" onclick="window.open(this.src)">
+                        @else
+                            <span style="color:gray;">Belum upload</span>
+                        @endif
                     </td>
 
                     <td>
