@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\customer\BookingController as CustomerBookingController;
 use App\Http\Controllers\customer\HistoryController as CustomerHistoryController;
+use App\Http\Controllers\admin\BookingController as AdminBookingController;
+use App\Http\Controllers\admin\ScheduleController as AdminScheduleController;
 use App\Http\Middleware\isAdmin;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +25,10 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
     // Route::get('/protected-admin', function () {
     //     return "You are an admin";
     // });
+
+    Route::post('/booking/{id}/status', [AdminBookingController::class, 'updateStatus'])->name('admin.booking.updateStatus');
+
+    Route::resource('/schedule', AdminScheduleController::class);
 });
 
 // Customer domain
@@ -30,6 +36,7 @@ Route::middleware(['auth', 'isCustomer'])->group(function () {
     // Route::get('/protected-customer', function () {
     //     return "You are an customer";
     // });
+
     Route::get('/booking/{id}', [CustomerBookingController::class, 'index'])->name('customer.booking.index');
     Route::post('/booking', [CustomerBookingController::class, 'store'])->name('customer.booking.store');
 

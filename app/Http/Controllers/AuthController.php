@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\City;
 use App\Models\Schedule;
 use App\Models\User;
@@ -76,7 +77,26 @@ class AuthController
         // ADMIN
         // ======================
         if ($user->role === 'admin') {
-            return view('admin.dashboard');
+
+            $bookings = Booking::with([
+                'user',
+                'schedule.plane.airline',
+                'schedule.origin',
+                'schedule.destination',
+                'payment'
+            ])
+                ->latest()
+                ->paginate(10);
+
+            $schedules = Schedule::with([
+                'plane.airline',
+                'origin',
+                'destination'
+            ])
+                ->latest()
+                ->paginate(10);
+
+            return view('admin.dashboard', compact('bookings', 'schedules'));
         }
 
         // ======================

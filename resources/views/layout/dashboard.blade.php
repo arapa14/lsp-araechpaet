@@ -18,8 +18,8 @@
 
             @auth
                 @if (auth()->user()->role === 'admin')
-                    <li><a href="#">Manage Flights</a></li>
-                    <li><a href="#">Manage Users</a></li>
+                    <li><a href="{{ route('schedule.index') }}">Manage Schedules</a></li>
+                    {{-- <li><a href="#">Manage Users</a></li> --}}
                 @endif
 
                 @if (auth()->user()->role === 'customer')
