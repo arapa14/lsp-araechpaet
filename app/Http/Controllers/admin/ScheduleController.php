@@ -10,17 +10,47 @@ use Illuminate\Http\Request;
 class ScheduleController
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $schedules = Schedule::with([
+        $query = Schedule::with([
             'plane.airline',
             'origin',
             'destination'
-        ])
-        ->latest()
-        ->paginate(10);
+        ]);
 
-        return view('admin.schedule.index', compact('schedules'));
+        // 🔍 SEARCH (airline / plane)
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->whereHas('plane.airline', function ($q2) use ($request) {
+                    $q2->where('name', 'like', '%' . $request->search . '%');
+                })
+                    ->orWhereHas('plane', function ($q2) use ($request) {
+                        $q2->where('name', 'like', '%' . $request->search . '%');
+                    });
+            });
+        }
+
+        // 🎯 FILTER (origin, destination, date)
+        if ($request->filled('origin_id')) {
+            $query->where('origin_id', $request->origin_id);
+        }
+
+        if ($request->filled('destination_id')) {
+            $query->where('destination_id', $request->destination_id);
+        }
+
+        if ($request->filled('date')) {
+            $query->whereDate('departure_time', $request->date);
+        }
+
+        $schedules = $query->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.schedule.index', [
+            'schedules' => $schedules,
+            'cities' => City::all(),
+        ]);
     }
 
     public function create()
@@ -79,7 +109,7 @@ class ScheduleController
             ->with('success', 'Schedule updated');
     }
 
-  
+
     public function destroy($id)
     {
         $schedule = Schedule::findOrFail($id);
@@ -87,5 +117,4 @@ class ScheduleController
 
         return back()->with('success', 'Schedule deleted');
     }
-
 }

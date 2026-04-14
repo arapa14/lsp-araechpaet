@@ -17,6 +17,35 @@
         </div>
     @endif
 
+    <div class="card" style="margin-bottom:16px;">
+        <form method="GET" action="{{ route('schedule.index') }}" style="display:flex; gap:10px; flex-wrap:wrap;">
+
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Airline / Plane">
+
+            <select name="origin_id">
+                <option value="">From</option>
+                @foreach ($cities as $city)
+                    <option value="{{ $city->id }}" {{ request('origin_id') == $city->id ? 'selected' : '' }}>
+                        {{ $city->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            <select name="destination_id">
+                <option value="">To</option>
+                @foreach ($cities as $city)
+                    <option value="{{ $city->id }}" {{ request('destination_id') == $city->id ? 'selected' : '' }}>
+                        {{ $city->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            <input type="date" name="date" value="{{ request('date') }}">
+
+            <button type="submit">Filter</button>
+        </form>
+    </div>
+
     <!-- TABLE -->
     <div class="card">
         <table>
@@ -103,8 +132,19 @@
         </table>
     </div>
 
-    <!-- PAGINATION (optional) -->
-    {{-- <div style="margin-top:20px;">
-    {{ $schedules->links() }}
-</div> --}}
+    <div style="margin-top:20px; text-align:center;">
+        @if ($schedules->onFirstPage())
+            <span>«</span>
+        @else
+            <a href="{{ $schedules->previousPageUrl() }}">«</a>
+        @endif
+
+        Page {{ $schedules->currentPage() }} / {{ $schedules->lastPage() }}
+
+        @if ($schedules->hasMorePages())
+            <a href="{{ $schedules->nextPageUrl() }}">»</a>
+        @else
+            <span>»</span>
+        @endif
+    </div>
 @endsection

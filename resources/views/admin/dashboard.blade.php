@@ -10,6 +10,22 @@
         </div>
     @endif
 
+    <div class="card">
+        <form method="GET" action="{{ route('dashboard') }}" style="display:flex; gap:10px; flex-wrap:wrap;">
+
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Kode / User / Airline">
+
+            <select name="status">
+                <option value="">All Status</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="success" {{ request('status') == 'success' ? 'selected' : '' }}>Success</option>
+                <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Failed</option>
+                <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>Canceled</option>
+            </select>
+
+            <button type="submit">Filter</button>
+        </form>
+    </div>
     <!-- TABLE -->
     <div class="card">
         <h2>Semua Booking</h2>
@@ -108,7 +124,19 @@
     </div>
 
     <!-- PAGINATION -->
-    <div style="margin-top:20px;">
-        {{ $bookings->links() }}
+    <div style="margin-top:20px; text-align:center;">
+        @if ($bookings->onFirstPage())
+            <span>«</span>
+        @else
+            <a href="{{ $bookings->previousPageUrl() }}">«</a>
+        @endif
+
+        Page {{ $bookings->currentPage() }} / {{ $bookings->lastPage() }}
+
+        @if ($bookings->hasMorePages())
+            <a href="{{ $bookings->nextPageUrl() }}">»</a>
+        @else
+            <span>»</span>
+        @endif
     </div>
 @endsection

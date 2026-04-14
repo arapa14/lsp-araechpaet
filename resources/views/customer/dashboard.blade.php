@@ -1,27 +1,36 @@
 @extends('layout.dashboard')
 
 @section('content')
-    <h1>Customer Dashboard</h1>
+    <h1>Welcome {{ Auth::user()->name }}</h1>
 
     <!-- FILTER -->
     <div class="card">
         <form method="GET" action="{{ route('dashboard') }}">
+            <label>Search:</label>
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Airline / Plane">
+
             <label>From:</label>
             <select name="origin_id">
+                <option value="">All</option>
                 @foreach ($cities as $city)
-                    <option value="{{ $city->id }}">{{ $city->name }}</option>
+                    <option value="{{ $city->id }}" {{ request('origin_id') == $city->id ? 'selected' : '' }}>
+                        {{ $city->name }}
+                    </option>
                 @endforeach
             </select>
 
             <label>To:</label>
             <select name="destination_id">
+                <option value="">All</option>
                 @foreach ($cities as $city)
-                    <option value="{{ $city->id }}">{{ $city->name }}</option>
+                    <option value="{{ $city->id }}" {{ request('destination_id') == $city->id ? 'selected' : '' }}>
+                        {{ $city->name }}
+                    </option>
                 @endforeach
             </select>
 
             <label>Date:</label>
-            <input type="date" name="date">
+            <input type="date" name="date" value="{{ request('date') }}">
 
             <button type="submit">Search</button>
         </form>
@@ -90,5 +99,20 @@
                 @endforelse
             </tbody>
         </table>
+        <div style="margin-top:20px; text-align:center;">
+            @if ($schedules->onFirstPage())
+                <span>«</span>
+            @else
+                <a href="{{ $schedules->previousPageUrl() }}">«</a>
+            @endif
+
+            Page {{ $schedules->currentPage() }} / {{ $schedules->lastPage() }}
+
+            @if ($schedules->hasMorePages())
+                <a href="{{ $schedules->nextPageUrl() }}">»</a>
+            @else
+                <span>»</span>
+            @endif
+        </div>
     </div>
 @endsection

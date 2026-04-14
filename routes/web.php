@@ -5,7 +5,7 @@ use App\Http\Controllers\customer\BookingController as CustomerBookingController
 use App\Http\Controllers\customer\HistoryController as CustomerHistoryController;
 use App\Http\Controllers\admin\BookingController as AdminBookingController;
 use App\Http\Controllers\admin\ScheduleController as AdminScheduleController;
-use App\Http\Middleware\isAdmin;
+use App\Http\Controllers\admin\UserController as AdminUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -29,6 +29,7 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::post('/booking/{id}/status', [AdminBookingController::class, 'updateStatus'])->name('admin.booking.updateStatus');
 
     Route::resource('/schedule', AdminScheduleController::class);
+    Route::resource('/user', AdminUserController::class);
 });
 
 // Customer domain

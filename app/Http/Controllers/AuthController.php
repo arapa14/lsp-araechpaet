@@ -78,16 +78,42 @@ class AuthController
         // ======================
         if ($user->role === 'admin') {
 
-            $bookings = Booking::with([
+            // ======================
+            // BOOKING QUERY
+            // ======================
+            $bookingQuery = Booking::with([
                 'user',
                 'schedule.plane.airline',
                 'schedule.origin',
                 'schedule.destination',
                 'payment'
-            ])
-                ->latest()
-                ->paginate(10);
+            ]);
 
+            // SEARCH
+            if ($request->filled('search')) {
+                $bookingQuery->where(function ($q) use ($request) {
+                    $q->where('code', 'like', '%' . $request->search . '%')
+                        ->orWhereHas('user', function ($q2) use ($request) {
+                            $q2->where('name', 'like', '%' . $request->search . '%');
+                        })
+                        ->orWhereHas('schedule.plane.airline', function ($q2) use ($request) {
+                            $q2->where('name', 'like', '%' . $request->search . '%');
+                        });
+                });
+            }
+
+            // FILTER STATUS
+            if ($request->filled('status')) {
+                $bookingQuery->where('status', $request->status);
+            }
+
+            $bookings = $bookingQuery->latest()
+                ->paginate(10)
+                ->withQueryString();
+
+            // ======================
+            // SCHEDULE (biarin aja / optional filter)
+            // ======================
             $schedules = Schedule::with([
                 'plane.airline',
                 'origin',
@@ -108,6 +134,7 @@ class AuthController
             'destination'
         ]);
 
+        // FILTER
         if ($request->filled('origin_id')) {
             $query->where('origin_id', $request->origin_id);
         }
@@ -120,10 +147,28 @@ class AuthController
             $query->whereDate('departure_time', $request->date);
         }
 
+        // SEARCH (simple)
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->whereHas('plane.airline', function ($q2) use ($request) {
+                    $q2->where('name', 'like', '%' . $request->search . '%');
+                })
+                    ->orWhereHas('plane', function ($q2) use ($request) {
+                        $q2->where('name', 'like', '%' . $request->search . '%');
+                    });
+            });
+        }
+
+        // hanya tampilkan jadwal yang belum lewat
         $query->where('departure_time', '>', now());
 
+        // PAGINATION + KEEP QUERY
+        $schedules = $query->orderBy('departure_time')
+            ->paginate(10)
+            ->withQueryString();
+
         return view('customer.dashboard', [
-            'schedules' => $query->orderBy('departure_time')->paginate(10),
+            'schedules' => $schedules,
             'cities' => City::all(),
         ]);
     }

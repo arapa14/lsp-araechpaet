@@ -159,6 +159,10 @@
             @auth
                 @if (auth()->user()->role === 'admin')
                     <li><a href="{{ route('schedule.index') }}">Manage Schedules</a></li>
+                    <li><a href="{{ route('user.index') }}">Manage Users</a></li>
+                    {{-- <li><a href="{{ route('airline.index') }}">Manage Airlines</a></li> --}}
+                    {{-- <li><a href="{{ route('plane.index') }}">Manage Planes</a></li> --}}
+                    {{-- <li><a href="{{ route('payment.index') }}">Manage Payments</a></li> --}}
                 @endif
 
                 @if (auth()->user()->role === 'customer')
