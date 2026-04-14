@@ -20,6 +20,7 @@
                 <th>Total</th>
                 <th>Payment</th>
                 <th>Bukti</th>
+                <th>Waktu</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -62,6 +63,10 @@
                         @else
                             <span style="color:gray;">Belum upload</span>
                         @endif
+                    </td>
+
+                    <td>
+                        {{ $booking->created_at }}
                     </td>
 
                     <td>
